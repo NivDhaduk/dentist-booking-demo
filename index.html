@@ -290,7 +290,76 @@
 
             border-color: #e5e7eb;
         }
+        /* =====================================================
+            SUGGESTED ALTERNATIVE SLOTS
+            ===================================================== */
 
+            .suggested-slots-box {
+
+                display: none;
+
+                margin-top: 14px;
+
+                padding: 14px;
+
+                border-radius: 12px;
+
+                background: #f8fbff;
+
+                border: 1px solid #dbeafe;
+            }
+
+            .suggested-slots-box.show {
+                display: block;
+            }
+
+            .suggested-slots-title {
+
+                font-size: 13px;
+
+                font-weight: 700;
+
+                color: #344054;
+
+                margin-bottom: 10px;
+            }
+
+            .suggested-slots {
+
+                display: flex;
+
+                flex-wrap: wrap;
+
+                gap: 8px;
+            }
+
+            .suggested-slot-button {
+
+                border: 1px solid #1677ff;
+
+                background: white;
+
+                color: #1677ff;
+
+                border-radius: 9px;
+
+                padding: 9px 13px;
+
+                font-size: 13px;
+
+                font-weight: 600;
+
+                cursor: pointer;
+
+                transition: 0.2s;
+            }
+
+            .suggested-slot-button:hover {
+
+                background: #1677ff;
+
+                color: white;
+            }
 
         /* =====================================================
            ERROR TEXT
@@ -716,6 +785,26 @@
                         id="selectedTime"
                         required>
 
+                        <!-- =================================================
+                        SUGGESTED SLOTS
+                        Shown only when the requested slot is unavailable.
+                        ================================================= -->
+
+                    <div
+                        id="suggestedSlotsBox"
+                        class="suggested-slots-box">
+
+                        <div class="suggested-slots-title">
+                            Available alternatives
+                        </div>
+
+                        <div
+                            id="suggestedSlots"
+                            class="suggested-slots">
+                        </div>
+
+                    </div>
+
                     <div
                         id="timeError"
                         class="field-error">
@@ -991,6 +1080,12 @@ const timeSlots =
 
 const selectedTimeInput =
     document.getElementById("selectedTime");
+
+const suggestedSlotsBox =
+    document.getElementById("suggestedSlotsBox");
+
+const suggestedSlotsContainer =
+    document.getElementById("suggestedSlots");
 
 const submitButton =
     document.getElementById("submitButton");
@@ -1349,6 +1444,192 @@ function hideMessage() {
 
 }
 
+/* =========================================================
+   SHOW SUGGESTED SLOTS
+   =========================================================
+   
+   Called when n8n says the requested appointment time
+   is unavailable.
+
+   Example from n8n:
+
+   suggestedSlots: [
+       {
+           date: "2026-08-10",
+           day: "Monday",
+           time: "04:05"
+       },
+       {
+           date: "2026-08-10",
+           day: "Monday",
+           time: "04:35"
+       },
+       {
+           date: "2026-08-10",
+           day: "Monday",
+           time: "05:05"
+       }
+   ]
+
+   Customer can click one of these buttons.
+   ========================================================= */
+
+function showSuggestedSlots(
+    slots
+) {
+
+    suggestedSlotsContainer.innerHTML = "";
+
+    suggestedSlotsBox.classList.remove(
+        "show"
+    );
+
+
+    // No suggestions
+    if (
+        !Array.isArray(slots) ||
+        slots.length === 0
+    ) {
+
+        return;
+    }
+
+
+    slots.forEach(
+        function(slot) {
+
+            if (
+                !slot ||
+                !slot.time
+            ) {
+                return;
+            }
+
+
+            const button =
+                document.createElement("button");
+
+            button.type = "button";
+
+            button.className =
+                "suggested-slot-button";
+
+
+            // Display time.
+            // If date is different, also show date.
+            if (
+                slot.date &&
+                slot.date !== dateInput.value
+            ) {
+
+                button.textContent =
+                    `${slot.time} · ${slot.day || slot.date}`;
+
+            } else {
+
+                button.textContent =
+                    slot.time;
+
+            }
+
+
+            button.addEventListener(
+                "click",
+                function() {
+
+                    // Remove selection from normal slots.
+                    document
+                        .querySelectorAll(".time-slot")
+                        .forEach(
+                            function(timeButton) {
+
+                                timeButton.classList.remove(
+                                    "selected"
+                                );
+
+                            }
+                        );
+
+
+                    // If suggestion belongs to another date,
+                    // automatically change the date.
+                    if (
+                        slot.date &&
+                        slot.date !== dateInput.value
+                    ) {
+
+                        dateInput.value =
+                            slot.date;
+
+                    }
+
+
+                    // Set selected time.
+                    selectedTimeInput.value =
+                        slot.time;
+
+
+                    // Highlight matching normal time slot
+                    // if it exists.
+                    document
+                        .querySelectorAll(".time-slot")
+                        .forEach(
+                            function(timeButton) {
+
+                                if (
+                                    timeButton.textContent ===
+                                    slot.time
+                                ) {
+
+                                    timeButton.classList.add(
+                                        "selected"
+                                    );
+
+                                }
+
+                            }
+                        );
+
+
+                    // Remove old error.
+                    hideMessage();
+
+
+                    document
+                        .getElementById("timeError")
+                        .classList.remove(
+                            "show"
+                        );
+
+
+                    // Hide suggestions after selection.
+                    suggestedSlotsBox.classList.remove(
+                        "show"
+                    );
+
+                }
+            );
+
+
+            suggestedSlotsContainer.appendChild(
+                button
+            );
+
+        }
+    );
+
+
+    if (
+        suggestedSlotsContainer.children.length > 0
+    ) {
+
+        suggestedSlotsBox.classList.add(
+            "show"
+        );
+
+    }
+
+}
 
 /* =========================================================
    FORM SUBMISSION
@@ -1490,18 +1771,47 @@ form.addEventListener(
                Read n8n response
                ----------------------------------------- */
 
-            let result = {};
+                        let result = {};
 
-            try {
+                try {
 
-                result =
-                    await response.json();
+                    result =
+                        await response.json();
 
-            } catch {
+                } catch {
 
-                result = {};
+                    result = {};
 
-            }
+                }
+
+
+                /* =====================================================
+                NORMALIZE N8N RESPONSE
+                =====================================================
+
+                n8n may return:
+                
+                {
+                    is_valid: false
+                }
+
+                OR:
+
+                [
+                    {
+                        is_valid: false
+                    }
+                ]
+
+                We normalize both formats.
+                ===================================================== */
+
+                if (Array.isArray(result)) {
+
+                    result =
+                        result[0] || {};
+
+                }
 
 
             /* -----------------------------------------
@@ -1520,23 +1830,45 @@ form.addEventListener(
 
 
             /* -----------------------------------------
-               Backend validation error
-               ----------------------------------------- */
+            BACKEND VALIDATION ERROR
+            -----------------------------------------
+
+            n8n is the final authority.
+
+            If n8n says the booking is invalid,
+            DO NOT show the success screen.
+
+            Instead:
+            1. Show the backend error message.
+            2. Show suggested slots if available.
+            3. Let the customer select another slot.
+            ----------------------------------------- */
 
             if (
-                result.is_valid === false
+                result.is_valid === false ||
+                result.validation_code ||
+                result.reason === "TIME_CONFLICT"
             ) {
 
                 showMessage(
                     result.validation_error ||
-                    "This appointment cannot be booked."
+                    "This appointment time is not available. Please choose another time.",
+                    "error"
                 );
+
+
+                // Show alternative slots returned by n8n.
+                showSuggestedSlots(
+                    result.suggestedSlots
+                );
+
 
                 submitButton.disabled =
                     false;
 
                 submitButton.textContent =
                     "Book Appointment";
+
 
                 return;
 
