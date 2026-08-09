@@ -917,16 +917,34 @@ const SERVICES = [
    dynamically from n8n.
    ========================================================= */
 
-const BOOKING_UI = {
+/* =========================================================
+   APPOINTMENT SETTINGS
+   =========================================================
+   
+   These values should match:
+   ⚙️ Business Settings in n8n
 
-    openingTime:
-        "09:00",
+   IMPORTANT:
+   The n8n workflow is still the FINAL authority.
+   These settings only control what the customer sees.
+   ========================================================= */
 
-    closingTime:
-        "19:00",
+const BOOKING_SETTINGS = {
 
-    slotIntervalMinutes:
-        30
+    // Business hours
+    openingTime: "08:00",
+    closingTime: "18:00",
+
+    // Appointment length
+    appointmentDuration: 30,
+
+    // Time between appointments
+    bufferTime: 15,
+
+    // Lunch break
+    lunchBreakEnabled: true,
+    lunchStart: "13:00",
+    lunchEnd: "14:00"
 
 };
 
@@ -1082,7 +1100,22 @@ function minutesToTime(minutes) {
 
 
 /* =========================================================
-   CREATE DEMO TIME SLOTS
+   GENERATE TIME SLOTS
+   =========================================================
+   
+   Slot spacing =
+   appointment duration + buffer
+
+   Example:
+   Duration = 30
+   Buffer = 15
+   Slot spacing = 45 minutes
+
+   The function also:
+   - respects opening time
+   - respects closing time
+   - skips lunch
+   - prevents appointments that would finish after closing
    ========================================================= */
 
 function generateTimeSlots() {
@@ -1091,19 +1124,110 @@ function generateTimeSlots() {
 
     const opening =
         timeToMinutes(
-            BOOKING_UI.openingTime
+            BOOKING_SETTINGS.openingTime
         );
 
     const closing =
         timeToMinutes(
-            BOOKING_UI.closingTime
+            BOOKING_SETTINGS.closingTime
         );
 
-    for (
-        let time = opening;
-        time < closing;
-        time += BOOKING_UI.slotIntervalMinutes
+    const duration =
+        Number(
+            BOOKING_SETTINGS.appointmentDuration
+        );
+
+    const buffer =
+        Number(
+            BOOKING_SETTINGS.bufferTime
+        );
+
+    const slotSpacing =
+        duration + buffer;
+
+    const lunchEnabled =
+        BOOKING_SETTINGS.lunchBreakEnabled;
+
+    const lunchStart =
+        lunchEnabled
+            ? timeToMinutes(
+                BOOKING_SETTINGS.lunchStart
+              )
+            : null;
+
+    const lunchEnd =
+        lunchEnabled
+            ? timeToMinutes(
+                BOOKING_SETTINGS.lunchEnd
+              )
+            : null;
+
+
+    /* ---------------------------------------------
+       Basic configuration check
+       --------------------------------------------- */
+
+    if (
+        !Number.isFinite(opening) ||
+        !Number.isFinite(closing) ||
+        !Number.isFinite(duration) ||
+        !Number.isFinite(buffer) ||
+        duration <= 0 ||
+        buffer < 0 ||
+        opening >= closing
     ) {
+
+        timeSlots.innerHTML = `
+            <div style="
+                grid-column:1/-1;
+                padding:14px;
+                border-radius:10px;
+                background:#fff1f0;
+                color:#b42318;
+                font-size:14px;
+            ">
+                Appointment times are currently unavailable.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    /* ---------------------------------------------
+       Generate slots
+       --------------------------------------------- */
+
+    for (
+        let start = opening;
+        start + duration <= closing;
+        start += slotSpacing
+    ) {
+
+        const end =
+            start + duration;
+
+
+        /* -----------------------------------------
+           Skip lunch-break slots
+           ----------------------------------------- */
+
+        if (lunchEnabled) {
+
+            const overlapsLunch =
+                start < lunchEnd &&
+                end > lunchStart;
+
+            if (overlapsLunch) {
+                continue;
+            }
+
+        }
+
+
+        /* -----------------------------------------
+           Create slot button
+           ----------------------------------------- */
 
         const button =
             document.createElement("button");
@@ -1114,7 +1238,12 @@ function generateTimeSlots() {
             "time-slot";
 
         button.textContent =
-            minutesToTime(time);
+            minutesToTime(start);
+
+
+        /* -----------------------------------------
+           Select slot
+           ----------------------------------------- */
 
         button.addEventListener(
             "click",
@@ -1122,13 +1251,15 @@ function generateTimeSlots() {
 
                 document
                     .querySelectorAll(".time-slot")
-                    .forEach(function(slot) {
+                    .forEach(
+                        function(slot) {
 
-                        slot.classList.remove(
-                            "selected"
-                        );
+                            slot.classList.remove(
+                                "selected"
+                            );
 
-                    });
+                        }
+                    );
 
                 button.classList.add(
                     "selected"
@@ -1139,16 +1270,20 @@ function generateTimeSlots() {
 
                 document
                     .getElementById("timeError")
-                    .classList.remove("show");
+                    .classList.remove(
+                        "show"
+                    );
 
             }
         );
+
 
         timeSlots.appendChild(button);
 
     }
 
 }
+
 
 
 /* =========================================================
