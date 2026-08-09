@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Book an Appointment | BrightSmile Dental Clinic</title>
+
+    <style>
+
+        /* =====================================================
+           BRIGHTSMILE DENTAL - BOOKING FORM
+           -----------------------------------------------------
+           This file contains:
+           1. HTML
+           2. CSS
+           3. JavaScript
+
+           IMPORTANT:
+           Most things you need to change are in the
+           CONFIGURATION section at the bottom.
+           ===================================================== */
+
+
+        /* =====================================================
+           BASIC RESET
+           ===================================================== */
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family:
+                Inter,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+
+            background: #f4f7fb;
+            color: #172033;
+            min-height: 100vh;
+        }
+
+
+        /* =====================================================
+           MAIN PAGE
+           ===================================================== */
+
+        .page {
+            min-height: 100vh;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            padding: 40px 20px;
+        }
+
+
+        /* =====================================================
+           BOOKING CARD
+           ===================================================== */
+
+        .booking-card {
+            width: 100%;
+            max-width: 560px;
+
+            background: white;
+
+            border-radius: 24px;
+
+            box-shadow:
+                0 20px 60px rgba(20, 40, 80, 0.10);
+
+            overflow: hidden;
+        }
+
+
+        /* =====================================================
+           HEADER
+           ===================================================== */
+
+        .header {
+            padding: 34px 34px 28px;
+
+            background: linear-gradient(
+                135deg,
+                #eaf7ff,
+                #ffffff
+            );
+        }
+
+        .logo {
+            width: 58px;
+            height: 58px;
+
+            border-radius: 16px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: #1677ff;
+            color: white;
+
+            font-size: 27px;
+
+            margin-bottom: 20px;
+        }
+
+        .business-name {
+            font-size: 14px;
+            font-weight: 700;
+
+            color: #1677ff;
+
+            margin-bottom: 8px;
+        }
+
+        .header h1 {
+            font-size: 30px;
+            line-height: 1.2;
+
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #667085;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+
+        /* =====================================================
+           FORM AREA
+           ===================================================== */
+
+        .form-area {
+            padding: 32px 34px 36px;
+        }
+
+
+        /* =====================================================
+           FORM GROUP
+           ===================================================== */
+
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        label {
+            display: block;
+
+            font-size: 14px;
+            font-weight: 700;
+
+            margin-bottom: 8px;
+
+            color: #273247;
+        }
+
+        .required {
+            color: #e5484d;
+        }
+
+
+        /* =====================================================
+           INPUTS
+           ===================================================== */
+
+        input,
+        select,
+        textarea {
+
+            width: 100%;
+
+            border: 1px solid #d8dee9;
+
+            border-radius: 12px;
+
+            padding: 13px 14px;
+
+            font-size: 15px;
+
+            color: #172033;
+
+            background: white;
+
+            outline: none;
+
+            transition:
+                border-color 0.2s,
+                box-shadow 0.2s;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+
+            border-color: #1677ff;
+
+            box-shadow:
+                0 0 0 4px rgba(22, 119, 255, 0.10);
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+
+        /* =====================================================
+           DATE + TIME
+           ===================================================== */
+
+        .date-time-grid {
+
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 14px;
+        }
+
+
+        /* =====================================================
+           TIME SLOTS
+           ===================================================== */
+
+        .time-slots {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 9px;
+
+            margin-top: 4px;
+        }
+
+        .time-slot {
+
+            padding: 11px 6px;
+
+            border-radius: 10px;
+
+            border: 1px solid #d8dee9;
+
+            background: white;
+
+            color: #344054;
+
+            cursor: pointer;
+
+            font-size: 13px;
+
+            font-weight: 600;
+
+            transition: 0.2s;
+        }
+
+        .time-slot:hover {
+
+            border-color: #1677ff;
+
+            color: #1677ff;
+        }
+
+        .time-slot.selected {
+
+            background: #1677ff;
+
+            border-color: #1677ff;
+
+            color: white;
+        }
+
+        .time-slot.disabled {
+
+            background: #f5f6f8;
+
+            color: #a0a7b4;
+
+            cursor: not-allowed;
+
+            border-color: #e5e7eb;
+        }
+
+
+        /* =====================================================
+           ERROR TEXT
+           ===================================================== */
+
+        .field-error {
+
+            display: none;
+
+            margin-top: 6px;
+
+            color: #d92d20;
+
+            font-size: 13px;
+        }
+
+        .field-error.show {
+            display: block;
+        }
+
+
+        /* =====================================================
+           GENERAL MESSAGE
+           ===================================================== */
+
+        .message-box {
+
+            display: none;
+
+            padding: 14px 16px;
+
+            border-radius: 12px;
+
+            margin-bottom: 20px;
+
+            font-size: 14px;
+
+            line-height: 1.5;
+        }
+
+        .message-box.show {
+            display: block;
+        }
+
+        .message-box.error {
+
+            background: #fff1f0;
+
+            color: #b42318;
+
+            border: 1px solid #fecdca;
+        }
+
+        .message-box.success {
+
+            background: #ecfdf3;
+
+            color: #027a48;
+
+            border: 1px solid #abefc6;
+        }
+
+
+        /* =====================================================
+           BOOK BUTTON
+           ===================================================== */
+
+        .submit-button {
+
+            width: 100%;
+
+            border: none;
+
+            border-radius: 12px;
+
+            padding: 15px;
+
+            background: #1677ff;
+
+            color: white;
+
+            font-size: 15px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition:
+                transform 0.15s,
+                opacity 0.2s;
+        }
+
+        .submit-button:hover {
+            transform: translateY(-1px);
+        }
+
+        .submit-button:disabled {
+
+            opacity: 0.65;
+
+            cursor: not-allowed;
+
+            transform: none;
+        }
+
+
+        /* =====================================================
+           SECURITY NOTE
+           ===================================================== */
+
+        .secure-note {
+
+            text-align: center;
+
+            color: #98a2b3;
+
+            font-size: 12px;
+
+            margin-top: 15px;
+        }
+
+
+        /* =====================================================
+           SUCCESS SCREEN
+           ===================================================== */
+
+        .success-screen {
+
+            display: none;
+
+            padding: 55px 34px;
+
+            text-align: center;
+        }
+
+        .success-screen.show {
+            display: block;
+        }
+
+        .success-icon {
+
+            width: 70px;
+            height: 70px;
+
+            border-radius: 50%;
+
+            background: #ecfdf3;
+
+            color: #039855;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            margin: 0 auto 20px;
+
+            font-size: 32px;
+        }
+
+        .success-screen h2 {
+
+            font-size: 25px;
+
+            margin-bottom: 10px;
+        }
+
+        .success-screen p {
+
+            color: #667085;
+
+            line-height: 1.6;
+
+            font-size: 15px;
+        }
+
+        .booking-id {
+
+            display: inline-block;
+
+            margin-top: 20px;
+
+            padding: 10px 14px;
+
+            border-radius: 8px;
+
+            background: #f2f4f7;
+
+            font-family: monospace;
+
+            font-size: 13px;
+        }
+
+
+        /* =====================================================
+           FOOTER
+           ===================================================== */
+
+        .footer {
+
+            text-align: center;
+
+            padding: 0 30px 25px;
+
+            color: #98a2b3;
+
+            font-size: 12px;
+        }
+
+
+        /* =====================================================
+           MOBILE
+           ===================================================== */
+
+        @media (max-width: 600px) {
+
+            .page {
+                padding: 15px;
+                align-items: flex-start;
+            }
+
+            .booking-card {
+                border-radius: 18px;
+            }
+
+            .header {
+                padding: 28px 22px 24px;
+            }
+
+            .form-area {
+                padding: 25px 22px 28px;
+            }
+
+            .header h1 {
+                font-size: 26px;
+            }
+
+            .date-time-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .time-slots {
+                grid-template-columns:
+                    repeat(3, 1fr);
+            }
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+<div class="page">
+
+    <div class="booking-card">
+
+
+        <!-- =================================================
+             HEADER
+             ================================================= -->
+
+        <div class="header">
+
+            <div class="logo" id="businessLogo">
+                🦷
+            </div>
+
+            <div
+                class="business-name"
+                id="businessName">
+                BrightSmile Dental Clinic
+            </div>
+
+            <h1>
+                Book an Appointment
+            </h1>
+
+            <p id="businessTagline">
+                Professional dental care, made simple.
+            </p>
+
+        </div>
+
+
+        <!-- =================================================
+             BOOKING FORM
+             ================================================= -->
+
+        <div
+            class="form-area"
+            id="formArea">
+
+            <!-- GENERAL MESSAGE -->
+
+            <div
+                id="messageBox"
+                class="message-box">
+            </div>
+
+
+            <form id="bookingForm">
+
+
+                <!-- SERVICE -->
+
+                <div class="form-group">
+
+                    <label for="service">
+                        Service
+                        <span class="required">*</span>
+                    </label>
+
+                    <select
+                        id="service"
+                        required>
+
+                        <option value="">
+                            Select a service
+                        </option>
+
+                    </select>
+
+                    <div
+                        id="serviceError"
+                        class="field-error">
+                        Please select a service.
+                    </div>
+
+                </div>
+
+
+                <!-- NAME -->
+
+                <div class="form-group">
+
+                    <label for="name">
+                        Full Name
+                        <span class="required">*</span>
+                    </label>
+
+                    <input
+                        type="text"
+                        id="name"
+                        placeholder="Enter your full name"
+                        autocomplete="name"
+                        required>
+
+                </div>
+
+
+                <!-- EMAIL -->
+
+                <div class="form-group">
+
+                    <label for="email">
+                        Email
+                        <span class="required">*</span>
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        placeholder="you@example.com"
+                        autocomplete="email"
+                        required>
+
+                </div>
+
+
+                <!-- PHONE -->
+
+                <div class="form-group">
+
+                    <label for="phone">
+                        Phone Number
+                        <span class="required">*</span>
+                    </label>
+
+                    <input
+                        type="tel"
+                        id="phone"
+                        placeholder="+91 98765 43210"
+                        autocomplete="tel"
+                        required>
+
+                </div>
+
+
+                <!-- DATE -->
+
+                <div class="form-group">
+
+                    <label for="date">
+                        Appointment Date
+                        <span class="required">*</span>
+                    </label>
+
+                    <input
+                        type="date"
+                        id="date"
+                        required>
+
+                </div>
+
+
+                <!-- TIME -->
+
+                <div class="form-group">
+
+                    <label>
+                        Appointment Time
+                        <span class="required">*</span>
+                    </label>
+
+                    <div
+                        id="timeSlots"
+                        class="time-slots">
+                    </div>
+
+                    <input
+                        type="hidden"
+                        id="selectedTime"
+                        required>
+
+                    <div
+                        id="timeError"
+                        class="field-error">
+                        Please select an appointment time.
+                    </div>
+
+                </div>
+
+
+                <!-- MESSAGE -->
+
+                <div class="form-group">
+
+                    <label for="message">
+                        Additional Message
+                        <span
+                            style="
+                                font-weight:400;
+                                color:#98a2b3;
+                            ">
+                            (Optional)
+                        </span>
+                    </label>
+
+                    <textarea
+                        id="message"
+                        placeholder="Anything we should know?"></textarea>
+
+                </div>
+
+
+                <!-- SUBMIT -->
+
+                <button
+                    type="submit"
+                    id="submitButton"
+                    class="submit-button">
+
+                    Book Appointment
+
+                </button>
+
+
+                <div class="secure-note">
+                    🔒 Your information is secure and private.
+                </div>
+
+            </form>
+
+        </div>
+
+
+        <!-- =================================================
+             SUCCESS SCREEN
+             ================================================= -->
+
+        <div
+            id="successScreen"
+            class="success-screen">
+
+            <div class="success-icon">
+                ✓
+            </div>
+
+            <h2>
+                Appointment Request Sent
+            </h2>
+
+            <p>
+                Thank you for choosing us.
+                Your appointment request has been received.
+            </p>
+
+            <div
+                id="bookingId"
+                class="booking-id">
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             FOOTER
+             ================================================= -->
+
+        <div class="footer">
+
+            <span id="footerBusinessName">
+                BrightSmile Dental Clinic
+            </span>
+
+            <br>
+
+            <span id="footerContact">
+                Surat, Gujarat
+            </span>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   =========================================================
+   CONFIGURATION
+   =========================================================
+
+   ⭐⭐ THIS IS THE MOST IMPORTANT SECTION ⭐⭐
+
+   When you want to customize the form, start here.
+
+   You normally DON'T need to touch the rest of the code.
+   ========================================================= */
+
+
+/* =========================================================
+   BUSINESS INFORMATION
+   ========================================================= */
+
+const BUSINESS = {
+
+    // Business name shown on the form
+    name:
+        "BrightSmile Dental Clinic",
+
+    // Small description below the title
+    tagline:
+        "Professional dental care, made simple.",
+
+    // Emoji / temporary logo
+    // Later you can replace this with an image/logo.
+    logo:
+        "🦷",
+
+    phone:
+        "+91 98765 43210",
+
+    email:
+        "hello@brightsmile.com",
+
+    address:
+        "Surat, Gujarat"
+
+};
+
+
+/* =========================================================
+   SERVICES
+   =========================================================
+
+   ⭐ ADD SERVICE
+   Write another line inside the array.
+
+   ⭐ REMOVE SERVICE
+   Delete that line.
+
+   ⭐ UPDATE SERVICE
+   Change the text.
+
+   Example:
+
+   const SERVICES = [
+       "Dental Consultation",
+       "Teeth Cleaning",
+       "Teeth Whitening"
+   ];
+
+   ========================================================= */
+
+const SERVICES = [
+
+    "Dental Consultation",
+
+    "Teeth Cleaning",
+
+    "Teeth Whitening",
+
+    "Dental Check-up",
+
+    "Root Canal Consultation"
+
+];
+
+
+/* =========================================================
+   APPOINTMENT TIME SETTINGS
+   =========================================================
+
+   These are ONLY for the demo form UI.
+
+   The n8n backend remains the final authority for
+   whether a slot is actually available.
+
+   Later we can make the frontend load real availability
+   dynamically from n8n.
+   ========================================================= */
+
+const BOOKING_UI = {
+
+    openingTime:
+        "09:00",
+
+    closingTime:
+        "19:00",
+
+    slotIntervalMinutes:
+        30
+
+};
+
+
+/* =========================================================
+   N8N WEBHOOK
+   =========================================================
+
+   ⭐ IMPORTANT
+
+   Replace this with your n8n PRODUCTION webhook URL.
+
+   Example:
+
+   https://your-n8n-domain/webhook/booking-request
+
+   Do NOT use the temporary Test URL for the final website.
+   ========================================================= */
+
+const N8N_WEBHOOK_URL =
+    "https://temprtest.app.n8n.cloud/webhook/booking request";
+
+
+/* =========================================================
+   END OF CONFIGURATION
+   ========================================================= */
+
+
+/* =========================================================
+   ELEMENTS
+   ========================================================= */
+
+const form =
+    document.getElementById("bookingForm");
+
+const serviceSelect =
+    document.getElementById("service");
+
+const dateInput =
+    document.getElementById("date");
+
+const timeSlots =
+    document.getElementById("timeSlots");
+
+const selectedTimeInput =
+    document.getElementById("selectedTime");
+
+const submitButton =
+    document.getElementById("submitButton");
+
+const messageBox =
+    document.getElementById("messageBox");
+
+const formArea =
+    document.getElementById("formArea");
+
+const successScreen =
+    document.getElementById("successScreen");
+
+const bookingIdElement =
+    document.getElementById("bookingId");
+
+
+/* =========================================================
+   APPLY BUSINESS INFORMATION
+   ========================================================= */
+
+document.getElementById(
+    "businessName"
+).textContent =
+    BUSINESS.name;
+
+document.getElementById(
+    "businessTagline"
+).textContent =
+    BUSINESS.tagline;
+
+document.getElementById(
+    "businessLogo"
+).textContent =
+    BUSINESS.logo;
+
+document.getElementById(
+    "footerBusinessName"
+).textContent =
+    BUSINESS.name;
+
+document.getElementById(
+    "footerContact"
+).textContent =
+    BUSINESS.address;
+
+
+/* =========================================================
+   LOAD SERVICES
+   ========================================================= */
+
+function loadServices() {
+
+    serviceSelect.innerHTML = `
+        <option value="">
+            Select a service
+        </option>
+    `;
+
+    SERVICES.forEach(function(service) {
+
+        const option =
+            document.createElement("option");
+
+        option.value = service;
+
+        option.textContent = service;
+
+        serviceSelect.appendChild(option);
+
+    });
+
+}
+
+
+/* =========================================================
+   TIME HELPERS
+   ========================================================= */
+
+function timeToMinutes(time) {
+
+    const [hours, minutes] =
+        time.split(":").map(Number);
+
+    return (
+        hours * 60
+    ) + minutes;
+
+}
+
+
+function minutesToTime(minutes) {
+
+    const hours =
+        Math.floor(minutes / 60);
+
+    const mins =
+        minutes % 60;
+
+    return (
+        String(hours).padStart(2, "0")
+        + ":"
+        + String(mins).padStart(2, "0")
+    );
+
+}
+
+
+/* =========================================================
+   CREATE DEMO TIME SLOTS
+   ========================================================= */
+
+function generateTimeSlots() {
+
+    timeSlots.innerHTML = "";
+
+    const opening =
+        timeToMinutes(
+            BOOKING_UI.openingTime
+        );
+
+    const closing =
+        timeToMinutes(
+            BOOKING_UI.closingTime
+        );
+
+    for (
+        let time = opening;
+        time < closing;
+        time += BOOKING_UI.slotIntervalMinutes
+    ) {
+
+        const button =
+            document.createElement("button");
+
+        button.type = "button";
+
+        button.className =
+            "time-slot";
+
+        button.textContent =
+            minutesToTime(time);
+
+        button.addEventListener(
+            "click",
+            function() {
+
+                document
+                    .querySelectorAll(".time-slot")
+                    .forEach(function(slot) {
+
+                        slot.classList.remove(
+                            "selected"
+                        );
+
+                    });
+
+                button.classList.add(
+                    "selected"
+                );
+
+                selectedTimeInput.value =
+                    button.textContent;
+
+                document
+                    .getElementById("timeError")
+                    .classList.remove("show");
+
+            }
+        );
+
+        timeSlots.appendChild(button);
+
+    }
+
+}
+
+
+/* =========================================================
+   DATE SETUP
+   ========================================================= */
+
+function setMinimumDate() {
+
+    const today =
+        new Date();
+
+    const year =
+        today.getFullYear();
+
+    const month =
+        String(
+            today.getMonth() + 1
+        ).padStart(2, "0");
+
+    const day =
+        String(
+            today.getDate()
+        ).padStart(2, "0");
+
+    const todayString =
+        `${year}-${month}-${day}`;
+
+    dateInput.min =
+        todayString;
+
+}
+
+
+/* =========================================================
+   SHOW MESSAGE
+   ========================================================= */
+
+function showMessage(
+    text,
+    type = "error"
+) {
+
+    messageBox.textContent =
+        text;
+
+    messageBox.className =
+        `message-box show ${type}`;
+
+}
+
+
+/* =========================================================
+   HIDE MESSAGE
+   ========================================================= */
+
+function hideMessage() {
+
+    messageBox.className =
+        "message-box";
+
+    messageBox.textContent =
+        "";
+
+}
+
+
+/* =========================================================
+   FORM SUBMISSION
+   ========================================================= */
+
+form.addEventListener(
+    "submit",
+    async function(event) {
+
+        event.preventDefault();
+
+        hideMessage();
+
+
+        /* ---------------------------------------------
+           Check service
+           --------------------------------------------- */
+
+        if (!serviceSelect.value) {
+
+            document
+                .getElementById("serviceError")
+                .classList.add("show");
+
+            return;
+
+        }
+
+
+        /* ---------------------------------------------
+           Check time
+           --------------------------------------------- */
+
+        if (!selectedTimeInput.value) {
+
+            document
+                .getElementById("timeError")
+                .classList.add("show");
+
+            return;
+
+        }
+
+
+        /* ---------------------------------------------
+           Remove old field errors
+           --------------------------------------------- */
+
+        document
+            .getElementById("serviceError")
+            .classList.remove("show");
+
+        document
+            .getElementById("timeError")
+            .classList.remove("show");
+
+
+        /* ---------------------------------------------
+           Prepare booking data
+           --------------------------------------------- */
+
+        const bookingData = {
+
+            client_name:
+                document
+                    .getElementById("name")
+                    .value
+                    .trim(),
+
+            client_email:
+                document
+                    .getElementById("email")
+                    .value
+                    .trim(),
+
+            client_phone:
+                document
+                    .getElementById("phone")
+                    .value
+                    .trim(),
+
+            service_type:
+                serviceSelect.value,
+
+            preferred_date:
+                dateInput.value,
+
+            preferred_time:
+                selectedTimeInput.value,
+
+            message:
+                document
+                    .getElementById("message")
+                    .value
+                    .trim()
+
+        };
+
+
+        /* ---------------------------------------------
+           Loading state
+           --------------------------------------------- */
+
+        submitButton.disabled =
+            true;
+
+        submitButton.textContent =
+            "Sending Request...";
+
+
+        try {
+
+            /* -----------------------------------------
+               Send booking to n8n
+               ----------------------------------------- */
+
+            const response =
+                await fetch(
+                    N8N_WEBHOOK_URL,
+                    {
+
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body:
+                            JSON.stringify(
+                                bookingData
+                            )
+
+                    }
+                );
+
+
+            /* -----------------------------------------
+               Read n8n response
+               ----------------------------------------- */
+
+            let result = {};
+
+            try {
+
+                result =
+                    await response.json();
+
+            } catch {
+
+                result = {};
+
+            }
+
+
+            /* -----------------------------------------
+               HTTP error
+               ----------------------------------------- */
+
+            if (!response.ok) {
+
+                throw new Error(
+                    result.message ||
+                    result.validation_error ||
+                    "Unable to submit the appointment."
+                );
+
+            }
+
+
+            /* -----------------------------------------
+               Backend validation error
+               ----------------------------------------- */
+
+            if (
+                result.is_valid === false
+            ) {
+
+                showMessage(
+                    result.validation_error ||
+                    "This appointment cannot be booked."
+                );
+
+                submitButton.disabled =
+                    false;
+
+                submitButton.textContent =
+                    "Book Appointment";
+
+                return;
+
+            }
+
+
+            /* -----------------------------------------
+               SUCCESS
+               ----------------------------------------- */
+
+            formArea.style.display =
+                "none";
+
+            successScreen.classList.add(
+                "show"
+            );
+
+
+            if (result.booking_id) {
+
+                bookingIdElement.textContent =
+                    "Booking ID: " +
+                    result.booking_id;
+
+            } else {
+
+                bookingIdElement.textContent =
+                    "Your request was submitted successfully.";
+
+            }
+
+
+        } catch (error) {
+
+            /* -----------------------------------------
+               NETWORK / SYSTEM ERROR
+               ----------------------------------------- */
+
+            showMessage(
+                error.message ||
+                "Something went wrong. Please try again."
+            );
+
+            submitButton.disabled =
+                false;
+
+            submitButton.textContent =
+                "Book Appointment";
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   INITIALIZE FORM
+   ========================================================= */
+
+loadServices();
+
+generateTimeSlots();
+
+setMinimumDate();
+
+</script>
+
+</body>
+</html>
